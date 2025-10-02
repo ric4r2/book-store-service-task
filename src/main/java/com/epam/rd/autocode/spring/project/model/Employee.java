@@ -1,5 +1,6 @@
 package com.epam.rd.autocode.spring.project.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -16,6 +17,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Employee extends User {
+    @Column(name = "birth_date")
     private LocalDate birthDate;
     private String phone;
 }

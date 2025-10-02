@@ -7,14 +7,17 @@ import java.math.BigDecimal;
 
 @Data
 public class ClientDTO {
-    @Email
-    @NotBlank
+    @NotBlank(message = "{validation.email.notblank}")
+    @Email(message = "{validation.email.invalid}")
     private String email;
-    @NotBlank
+    
+    @NotBlank(message = "{validation.password.notblank}")
+    @Size(min = 6, message = "{validation.password.size}")
     private String password;
-    @NotBlank
+    
+    @NotBlank(message = "{validation.name.notblank}")
     private String name;
+    
     @NotNull
-    @DecimalMin("0.0")
-    private BigDecimal balance;
+    private BigDecimal balance = BigDecimal.ZERO;
 }

@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "books") // Matches your SQL script
+@Table(name = "books")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

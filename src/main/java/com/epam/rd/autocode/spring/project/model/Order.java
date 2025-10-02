@@ -20,12 +20,17 @@ public class Order {
     private Long id;
 
     @ManyToOne
+    @JoinColumn(name = "client_id", nullable = false)
     private Client client;
 
     @ManyToOne
+    @JoinColumn(name = "employee_id")
     private Employee employee;
 
+    @Column(name = "order_date", nullable = false)
     private LocalDateTime orderDate;
+
+    @Column(nullable = false)
     private BigDecimal price;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
