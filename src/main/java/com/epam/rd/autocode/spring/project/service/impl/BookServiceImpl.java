@@ -53,7 +53,7 @@ public class BookServiceImpl implements BookService {
                 .orElseThrow(() -> new NotFoundException("Book not found with name: " + name));
 
         if (!name.equals(bookDTO.getName()) && bookRepository.existsByName(bookDTO.getName())) {
-            throw new AlreadyBoundException("Book already exists with name: " + bookDTO.getName());
+            throw new AlreadyExistException("Book already exists with name: " + bookDTO.getName());
         }
 
         modelMapper.map(bookDTO, book);

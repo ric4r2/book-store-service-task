@@ -72,9 +72,9 @@ public class BookItemDTOTest {
         final var parameters = Arrays.asList(constructor.getParameters());
 
         parameters.stream()
-                .filter(p -> p.getType().getTypeName().equals(Constants.STRING_TYPE))
+                .filter(p -> p.getType().getTypeName().equals(Constants.BOOK))
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("No parameter with type " + Constants.STRING_TYPE));
+                .orElseThrow(() -> new RuntimeException("No parameter with type " + Constants.BOOK));
 
         parameters.stream()
                 .filter(p -> p.getType().getTypeName().equals(Constants.INT_TYPE))
@@ -103,7 +103,7 @@ public class BookItemDTOTest {
     @DisplayName("Check field type and field name")
     @ParameterizedTest
     @CsvSource({
-            "java.lang.String, bookName, 1",
+            "com.epam.rd.autocode.spring.project.model.Book, book, 1",
             "java.lang.Integer, quantity, 1"
     })
     void checkNameFieldType(String fieldType, String fieldName, long expected) {

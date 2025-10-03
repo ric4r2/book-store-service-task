@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
@@ -15,9 +16,14 @@ import java.time.LocalDate;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
-@AllArgsConstructor
 public class Employee extends User {
     @Column(name = "birth_date")
     private LocalDate birthDate;
     private String phone;
+
+    public Employee(Long id, String email, String password, String name, LocalDate birthDate, String phone) {
+        super(id, email, password, name);
+        this.birthDate = birthDate;
+        this.phone = phone;
+    }
 }

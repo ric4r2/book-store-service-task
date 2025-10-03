@@ -7,13 +7,13 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "users")
-@Inheritance(strategy = InheritanceType.JOINED) // Most normalized inheritance strategy
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
     @Column(unique = true, nullable = false)

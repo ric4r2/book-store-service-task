@@ -79,8 +79,9 @@ public class OrderServiceImpl implements OrderService {
         for (BookItemDTO itemDTO : orderDTO.getBookItems()) {
             Book book = itemDTO.getBook();
             if (book.getId() != null) {
-                book = bookRepository.findById(book.getId())
-                        .orElseThrow(() -> new NotFoundException("Book not found with id: " + book.getId()));
+                Long bookId = book.getId();  // Store the ID in a separate final variable
+                book = bookRepository.findById(bookId)
+                        .orElseThrow(() -> new NotFoundException("Book not found with id: " + bookId));
             }
 
             BookItem bookItem = new BookItem();
@@ -97,7 +98,7 @@ public class OrderServiceImpl implements OrderService {
 
     private OrderDTO convertToDTO(Order order) {
         OrderDTO dto = new OrderDTO();
-        dto.setId(order.getId());
+//        dto.setId(order.getId());
         dto.setClientEmail(order.getClient().getEmail());
         if (order.getEmployee() != null) {
             dto.setEmployeeEmail(order.getEmployee().getEmail());

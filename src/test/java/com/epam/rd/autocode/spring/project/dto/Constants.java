@@ -1,8 +1,12 @@
 package com.epam.rd.autocode.spring.project.dto;
 
+import com.epam.rd.autocode.spring.project.model.Book;
+import com.epam.rd.autocode.spring.project.model.BookItem;
+
 public class Constants {
 
     public static final String CLASS_PACKAGE = "com.epam.rd.autocode.spring.project.dto";
+    public static final String CLASS_PACKAGE_MODEL = "com.epam.rd.autocode.spring.project.model";
 
     public static final String AGE_GROUP_TYPE = "com.epam.rd.autocode.spring.project.model" + ".enums." + AgeGroup.ENUM_NAME;
     public static final String LANGUAGE_TYPE = "com.epam.rd.autocode.spring.project.model" + ".enums." + Language.ENUM_NAME;
@@ -11,6 +15,8 @@ public class Constants {
     public static final String CLIENT_DTO_TYPE = CLASS_PACKAGE + "." + ClientDTO.class.getSimpleName();
     public static final String EMPLOYEE_DTO_TYPE = CLASS_PACKAGE + "." + EmployeeDTO.class.getSimpleName();
     public static final String ORDER_DTO_TYPE = CLASS_PACKAGE + "." + OrderDTO.class.getSimpleName();
+
+    public static final String BOOK = CLASS_PACKAGE_MODEL + "." + Book.class.getSimpleName();
 
     public static final String INT_TYPE = "java.lang.Integer";
     public static final String STRING_TYPE = "java.lang.String";

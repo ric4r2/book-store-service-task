@@ -2,15 +2,18 @@ package com.epam.rd.autocode.spring.project.dto;
 
 
 import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class OrderDTO {
-    private Long id;
     
     @NotNull(message = "{validation.client.email.notnull}")
     @Email(message = "{validation.email.invalid}")
