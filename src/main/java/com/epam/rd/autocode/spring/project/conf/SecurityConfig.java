@@ -1,5 +1,6 @@
 package com.epam.rd.autocode.spring.project.conf;
 
+import com.epam.rd.autocode.spring.project.handler.CustomLogoutSuccessHandler;
 import com.epam.rd.autocode.spring.project.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -18,6 +19,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private final CustomUserDetailsService customUserDetailsService;
+    private final CustomLogoutSuccessHandler customLogoutSuccessHandler;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -46,7 +48,7 @@ public class SecurityConfig {
                         .permitAll()
                 )
                 .logout(logout -> logout
-                        .logoutSuccessUrl("/")
+                        .logoutSuccessHandler(customLogoutSuccessHandler)
                         .permitAll()
                 )
                 .userDetailsService(customUserDetailsService)

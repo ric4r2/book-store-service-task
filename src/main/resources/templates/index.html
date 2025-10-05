@@ -119,8 +119,7 @@
             <h1 class="display-4 mb-4" th:text="#{hero.title}">Welcome to Our Book Store</h1>
             <p class="lead mb-4" th:text="#{hero.subtitle}">Discover your next favorite book from our extensive collection</p>
             <div class="d-flex justify-content-center gap-3">
-                <a th:href="@{/books}" class="btn btn-light btn-lg" th:text="#{hero.browse}">Browse Books</a>
-                <a th:href="@{/about}" class="btn btn-outline-light btn-lg" th:text="#{hero.learn}">Learn More</a>
+                <a th:href="@{/books-page(lang=${#locale.language})}" class="btn btn-light btn-lg" th:text="#{hero.browse}">Browse Books</a>
             </div>
         </div>
     </section>

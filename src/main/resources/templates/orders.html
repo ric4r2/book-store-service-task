@@ -87,7 +87,11 @@
                             <span sec:authentication="name">User</span>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/logout" th:text="#{nav.logout}">Logout</a></li>
+                            <li>
+                                <form th:action="@{/logout}" method="post" class="d-inline">
+                                    <button type="submit" class="dropdown-item" th:text="#{nav.logout}">Logout</button>
+                                </form>
+                            </li>
                         </ul>
                     </li>
                 </ul>

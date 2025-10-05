@@ -1,11 +1,16 @@
 package com.epam.rd.autocode.spring.project.controller;
 
+import com.epam.rd.autocode.spring.project.service.BookService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
+@RequiredArgsConstructor
 public class HomeController {
+    
+    private final BookService bookService;
     
     @GetMapping("/")
     public String home(Model model) {
@@ -18,7 +23,15 @@ public class HomeController {
     }
     
     @GetMapping("/books-page")
-    public String books() {
+    public String books(Model model) {
+        try {
+            // Fetch books from the service (same data as REST endpoint)
+            model.addAttribute("books", bookService.getAllBooks());
+        } catch (Exception e) {
+            // In case of error, provide empty list
+            model.addAttribute("books", java.util.Collections.emptyList());
+            model.addAttribute("error", "Unable to load books at this time.");
+        }
         return "books";
     }
 }

@@ -87,7 +87,12 @@
                             <span sec:authentication="name">User</span>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/logout" th:text="#{nav.logout}">Logout</a></li>
+                            <li>
+                                <form th:action="@{/logout}" method="post" class="d-inline">
+                                    <input type="hidden" name="lang" th:value="${#locale.language}">
+                                    <button type="submit" class="dropdown-item" th:text="#{nav.logout}">Logout</button>
+                                </form>
+                            </li>
                         </ul>
                     </li>
                 </ul>
@@ -102,9 +107,40 @@
                 <h1 th:text="#{page.books.heading}">Our Books Collection</h1>
                 <p th:text="#{page.books.description}">Explore our extensive collection of books from various genres and authors.</p>
                 
-                <div class="alert alert-info" role="alert">
+                <!-- Error handling -->
+                <div th:if="${error}" class="alert alert-danger" role="alert">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    <span th:text="${error}">Error loading books</span>
+                </div>
+                
+                <!-- Books display -->
+                <div th:if="${books != null and not #lists.isEmpty(books)}" class="row">
+                    <div th:each="book : ${books}" class="col-md-6 col-lg-4 mb-4">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title" th:text="${book.name}">Book Title</h5>
+                                <h6 class="card-subtitle mb-2 text-muted" th:text="${book.author}">Author</h6>
+                                <p class="card-text">
+                                    <strong th:text="#{book.genre}">Genre:</strong> <span th:text="${book.genre}">Genre</span><br>
+                                    <strong th:text="#{book.language}">Language:</strong> <span th:text="${book.language}">Language</span><br>
+                                    <strong th:text="#{book.ageGroup}">Age Group:</strong> <span th:text="${book.ageGroup}">Age Group</span><br>
+                                    <strong th:text="#{book.pages}">Pages:</strong> <span th:text="${book.pages}">Pages</span><br>
+                                    <strong th:text="#{book.publicationDate}">Publication Date:</strong> <span th:text="${#temporals.format(book.publicationDate, 'yyyy-MM-dd')}">Date</span>
+                                </p>
+                                <p th:if="${book.description}" class="card-text" th:text="${book.description}">Book description</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="h5 mb-0 text-success" th:text="'$' + ${book.price}">$0.00</span>
+                                    <small class="text-muted" th:text="${book.characteristics}">Characteristics</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- No books message -->
+                <div th:if="${books == null or #lists.isEmpty(books)}" class="alert alert-info" role="alert">
                     <i class="bi bi-info-circle"></i>
-                    <span th:text="#{page.books.placeholder}">Books page is under construction. Coming soon!</span>
+                    <span th:text="#{page.books.nobooks}">No books available at the moment.</span>
                 </div>
             </div>
         </div>
