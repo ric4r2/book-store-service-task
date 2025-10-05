@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 public class BookItemDTO {
     @NotNull
     private Book book;
+
     @NotNull
     @Min(1)
     private Integer quantity;
