@@ -16,4 +16,9 @@ public class HomeController {
         
         return "index";
     }
+    
+    @GetMapping("/books-page")
+    public String books() {
+        return "books";
+    }
 }

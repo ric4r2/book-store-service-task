@@ -27,13 +27,21 @@
         .navbar-brand {
             font-weight: bold;
         }
+        .dropdown-item.active {
+            background-color: #667eea;
+            color: white;
+        }
+        .dropdown-item.active:hover {
+            background-color: #5a6fd8;
+            color: white;
+        }
     </style>
 </head>
 <body>
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
-            <a class="navbar-brand" href="/" th:href="@{/}">
+            <a class="navbar-brand" href="/" th:href="@{/(lang=${#locale.language})}">
                 <i class="bi bi-book"></i>
                 <span th:text="#{navbar.brand}">Book Store</span>
             </a>
@@ -45,23 +53,45 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link active" th:href="@{/}" th:text="#{nav.home}">Home</a>
+                        <a class="nav-link active" th:href="@{/(lang=${#locale.language})}" th:text="#{nav.home}">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/books}" th:text="#{nav.books}">Books</a>
+                        <a class="nav-link" th:href="@{/books-page(lang=${#locale.language})}" th:text="#{nav.books}">Books</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/orders}" th:text="#{nav.orders}">Orders</a>
+                        <a class="nav-link" th:href="@{/orders(lang=${#locale.language})}" th:text="#{nav.orders}">Orders</a>
                     </li>
                 </ul>
                 
                 <!-- Authentication Section -->
                 <ul class="navbar-nav">
+                    <!-- Language Selector -->
+                    <li class="nav-item dropdown me-3">
+                        <a class="nav-link dropdown-toggle" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-globe"></i>
+                            <span th:text="#{lang.selector.title}">Language</span>
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="languageDropdown">
+                            <li>
+                                <a class="dropdown-item" th:href="@{''(lang='en')}" th:classappend="${#locale.language == 'en'} ? 'active' : ''">
+                                    <i class="bi bi-flag me-2"></i>
+                                    <span th:text="#{lang.english}">English</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" th:href="@{''(lang='es')}" th:classappend="${#locale.language == 'es'} ? 'active' : ''">
+                                    <i class="bi bi-flag me-2"></i>
+                                    <span th:text="#{lang.spanish}">Spanish</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    
                     <li class="nav-item" sec:authorize="!isAuthenticated()">
-                        <a class="nav-link" th:href="@{/login}" th:text="#{nav.login}">Login</a>
+                        <a class="nav-link" th:href="@{/login(lang=${#locale.language})}" th:text="#{nav.login}">Login</a>
                     </li>
                     <li class="nav-item" sec:authorize="!isAuthenticated()">
-                        <a class="nav-link" th:href="@{/register}" th:text="#{nav.register}">Register</a>
+                        <a class="nav-link" th:href="@{/register(lang=${#locale.language})}" th:text="#{nav.register}">Register</a>
                     </li>
                     <li class="nav-item dropdown" sec:authorize="isAuthenticated()">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="#{page.register.title}">Register - Book Store Service</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <style>
+        .navbar-brand {
+            font-weight: bold;
+        }
+        .dropdown-item.active {
+            background-color: #667eea;
+            color: white;
+        }
+        .dropdown-item.active:hover {
+            background-color: #5a6fd8;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/" th:href="@{/(lang=${#locale.language})}">
+                <i class="bi bi-book"></i>
+                <span th:text="#{navbar.brand}">Book Store</span>
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/(lang=${#locale.language})}" th:text="#{nav.home}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/books-page(lang=${#locale.language})}" th:text="#{nav.books}">Books</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/orders(lang=${#locale.language})}" th:text="#{nav.orders}">Orders</a>
+                    </li>
+                </ul>
+                
+                <!-- Authentication Section -->
+                <ul class="navbar-nav">
+                    <!-- Language Selector -->
+                    <li class="nav-item dropdown me-3">
+                        <a class="nav-link dropdown-toggle" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-globe"></i>
+                            <span th:text="#{lang.selector.title}">Language</span>
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="languageDropdown">
+                            <li>
+                                <a class="dropdown-item" th:href="@{/register(lang='en')}" th:classappend="${#locale.language == 'en'} ? 'active' : ''">
+                                    <i class="bi bi-flag me-2"></i>
+                                    <span th:text="#{lang.english}">English</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" th:href="@{/register(lang='es')}" th:classappend="${#locale.language == 'es'} ? 'active' : ''">
+                                    <i class="bi bi-flag me-2"></i>
+                                    <span th:text="#{lang.spanish}">Spanish</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/login(lang=${#locale.language})}" th:text="#{nav.login}">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" th:href="@{/register(lang=${#locale.language})}" th:text="#{nav.register}">Register</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-12">
+                <h1 th:text="#{page.register.heading}">Create Account</h1>
+                <p th:text="#{page.register.description}">Join our book store community today!</p>
+                
+                <div class="alert alert-info" role="alert">
+                    <i class="bi bi-info-circle"></i>
+                    <span th:text="#{page.register.placeholder}">Registration page is under construction. Coming soon!</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

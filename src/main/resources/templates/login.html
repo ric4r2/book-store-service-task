@@ -48,6 +48,14 @@
         .navbar-brand {
             font-weight: bold;
         }
+        .dropdown-item.active {
+            background-color: #667eea;
+            color: white;
+        }
+        .dropdown-item.active:hover {
+            background-color: #5a6fd8;
+            color: white;
+        }
         .alert {
             border-radius: 10px;
         }
@@ -75,7 +83,7 @@
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
-            <a class="navbar-brand" href="/" th:href="@{/}">
+            <a class="navbar-brand" href="/" th:href="@{/(lang=${#locale.language})}">
                 <i class="bi bi-book"></i>
                 <span th:text="#{navbar.brand}">Book Store</span>
             </a>
@@ -87,15 +95,37 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/}" th:text="#{nav.home}">Home</a>
+                        <a class="nav-link" th:href="@{/(lang=${#locale.language})}" th:text="#{nav.home}">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/books}" th:text="#{nav.books}">Books</a>
+                        <a class="nav-link" th:href="@{/books-page(lang=${#locale.language})}" th:text="#{nav.books}">Books</a>
                     </li>
                 </ul>
                 
                 <!-- Authentication Section -->
                 <ul class="navbar-nav">
+                    <!-- Language Selector -->
+                    <li class="nav-item dropdown me-3">
+                        <a class="nav-link dropdown-toggle" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-globe"></i>
+                            <span th:text="#{lang.selector.title}">Language</span>
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="languageDropdown">
+                            <li>
+                                <a class="dropdown-item" th:href="@{/login(lang='en')}" th:classappend="${#locale.language == 'en'} ? 'active' : ''">
+                                    <i class="bi bi-flag me-2"></i>
+                                    <span th:text="#{lang.english}">English</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" th:href="@{/login(lang='es')}" th:classappend="${#locale.language == 'es'} ? 'active' : ''">
+                                    <i class="bi bi-flag me-2"></i>
+                                    <span th:text="#{lang.spanish}">Spanish</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    
                     <li class="nav-item">
                         <a class="nav-link active" th:href="@{/login}" th:text="#{nav.login}">Login</a>
                     </li>

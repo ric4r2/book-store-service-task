@@ -29,8 +29,12 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/", "/index").permitAll()
                         .requestMatchers("/books/**").permitAll()
+                        .requestMatchers("/books-page").permitAll()
                         .requestMatchers("/clients").permitAll()
+                        .requestMatchers("/orders").permitAll()
+                        .requestMatchers("/register").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/login").permitAll()
                         .requestMatchers("/css/**", "/js/**", "/img/**").permitAll()
