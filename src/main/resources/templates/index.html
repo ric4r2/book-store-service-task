@@ -24,6 +24,13 @@
         .feature-card:hover {
             transform: translateY(-5px);
         }
+        .category-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15) !important;
+        }
         .navbar-brand {
             font-weight: bold;
         }
@@ -131,91 +138,77 @@
         </div>
     </section>
 
-    <!-- Features Section -->
-    <section class="py-5">
+    <!-- Featured Categories Section -->
+    <section class="bg-light py-5">
         <div class="container">
             <div class="row text-center mb-5">
                 <div class="col">
-                    <h2 th:text="#{features.title}">Why Choose Our Book Store?</h2>
-                    <p class="text-muted" th:text="#{features.subtitle}">We provide the best book shopping experience</p>
+                    <h2 class="mb-3">Explore Our Collection</h2>
+                    <p class="text-muted">Discover books across various genres and categories</p>
+                </div>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-3 col-sm-6">
+                    <div class="card category-card h-100 text-center p-4 border-0 shadow-sm">
+                        <div class="card-body">
+                            <i class="bi bi-book text-primary mb-3" style="font-size: 3rem;"></i>
+                            <h5 class="card-title">Fiction</h5>
+                            <p class="card-text text-muted">Novels, short stories, and literary fiction</p>
+                            <a sec:authorize="isAuthenticated()" th:href="@{/books(lang=${#locale.language})}" class="btn btn-outline-primary btn-sm">Browse</a>
+                            <a sec:authorize="!isAuthenticated()" th:href="@{/login(lang=${#locale.language})}" class="btn btn-outline-primary btn-sm">Login to Browse</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-3 col-sm-6">
+                    <div class="card category-card h-100 text-center p-4 border-0 shadow-sm">
+                        <div class="card-body">
+                            <i class="bi bi-mortarboard text-success mb-3" style="font-size: 3rem;"></i>
+                            <h5 class="card-title">Educational</h5>
+                            <p class="card-text text-muted">Textbooks, reference, and academic materials</p>
+                            <a sec:authorize="isAuthenticated()" th:href="@{/books(lang=${#locale.language})}" class="btn btn-outline-success btn-sm">Browse</a>
+                            <a sec:authorize="!isAuthenticated()" th:href="@{/login(lang=${#locale.language})}" class="btn btn-outline-success btn-sm">Login to Browse</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-3 col-sm-6">
+                    <div class="card category-card h-100 text-center p-4 border-0 shadow-sm">
+                        <div class="card-body">
+                            <i class="bi bi-lightbulb text-warning mb-3" style="font-size: 3rem;"></i>
+                            <h5 class="card-title">Self-Help</h5>
+                            <p class="card-text text-muted">Personal development and motivation</p>
+                            <a sec:authorize="isAuthenticated()" th:href="@{/books(lang=${#locale.language})}" class="btn btn-outline-warning btn-sm">Browse</a>
+                            <a sec:authorize="!isAuthenticated()" th:href="@{/login(lang=${#locale.language})}" class="btn btn-outline-warning btn-sm">Login to Browse</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-3 col-sm-6">
+                    <div class="card category-card h-100 text-center p-4 border-0 shadow-sm">
+                        <div class="card-body">
+                            <i class="bi bi-heart text-danger mb-3" style="font-size: 3rem;"></i>
+                            <h5 class="card-title">Romance</h5>
+                            <p class="card-text text-muted">Love stories and romantic novels</p>
+                            <a sec:authorize="isAuthenticated()" th:href="@{/books(lang=${#locale.language})}" class="btn btn-outline-danger btn-sm">Browse</a>
+                            <a sec:authorize="!isAuthenticated()" th:href="@{/login(lang=${#locale.language})}" class="btn btn-outline-danger btn-sm">Login to Browse</a>
+                        </div>
+                    </div>
                 </div>
             </div>
             
-            <div class="row g-4">
-                <div class="col-md-4">
-                    <div class="card feature-card h-100 text-center p-4">
-                        <div class="card-body">
-                            <i class="bi bi-collection text-primary" style="font-size: 3rem;"></i>
-                            <h5 class="card-title mt-3" th:text="#{feature.collection.title}">Vast Collection</h5>
-                            <p class="card-text" th:text="#{feature.collection.description}">
-                                Explore thousands of books across all genres and categories
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-md-4">
-                    <div class="card feature-card h-100 text-center p-4">
-                        <div class="card-body">
-                            <i class="bi bi-truck text-success" style="font-size: 3rem;"></i>
-                            <h5 class="card-title mt-3" th:text="#{feature.delivery.title}">Fast Delivery</h5>
-                            <p class="card-text" th:text="#{feature.delivery.description}">
-                                Quick and reliable delivery to your doorstep
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-md-4">
-                    <div class="card feature-card h-100 text-center p-4">
-                        <div class="card-body">
-                            <i class="bi bi-shield-check text-warning" style="font-size: 3rem;"></i>
-                            <h5 class="card-title mt-3" th:text="#{feature.secure.title}">Secure Shopping</h5>
-                            <p class="card-text" th:text="#{feature.secure.description}">
-                                Safe and secure payment processing for your peace of mind
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Statistics Section -->
-    <section class="bg-light py-5">
-        <div class="container">
-            <div class="row text-center">
-                <div class="col-md-3 mb-4">
-                    <div class="card border-0 bg-transparent">
-                        <div class="card-body">
-                            <h3 class="text-primary" th:text="${totalBooks} ?: '10,000+'">10,000+</h3>
-                            <p class="text-muted" th:text="#{stats.books}">Books Available</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3 mb-4">
-                    <div class="card border-0 bg-transparent">
-                        <div class="card-body">
-                            <h3 class="text-success" th:text="${totalCustomers} ?: '5,000+'">5,000+</h3>
-                            <p class="text-muted" th:text="#{stats.customers}">Happy Customers</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3 mb-4">
-                    <div class="card border-0 bg-transparent">
-                        <div class="card-body">
-                            <h3 class="text-warning" th:text="${totalOrders} ?: '25,000+'">25,000+</h3>
-                            <p class="text-muted" th:text="#{stats.orders}">Orders Delivered</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3 mb-4">
-                    <div class="card border-0 bg-transparent">
-                        <div class="card-body">
-                            <h3 class="text-info" th:text="#{stats.rating}">4.8/5</h3>
-                            <p class="text-muted" th:text="#{stats.rating.label}">Customer Rating</p>
-                        </div>
-                    </div>
+            <div class="text-center mt-5">
+                <a sec:authorize="isAuthenticated()" th:href="@{/books(lang=${#locale.language})}" class="btn btn-primary btn-lg">
+                    <i class="bi bi-collection me-2"></i>View All Books
+                </a>
+                <div sec:authorize="!isAuthenticated()">
+                    <p class="text-muted mb-3">Ready to start your reading journey?</p>
+                    <a th:href="@{/register(lang=${#locale.language})}" class="btn btn-primary btn-lg me-3">
+                        <i class="bi bi-person-plus me-2"></i>Join Now
+                    </a>
+                    <a th:href="@{/login(lang=${#locale.language})}" class="btn btn-outline-primary btn-lg">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+                    </a>
                 </div>
             </div>
         </div>
