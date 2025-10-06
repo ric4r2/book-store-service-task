@@ -22,7 +22,7 @@ public class HomeController {
         return "index";
     }
     
-    @GetMapping("/books-page")
+    @GetMapping(value = "/books", produces = "text/html")
     public String books(Model model) {
         try {
             // Fetch books from the service (same data as REST endpoint)

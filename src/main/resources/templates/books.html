@@ -43,10 +43,10 @@
                     <li class="nav-item">
                         <a class="nav-link" th:href="@{/(lang=${#locale.language})}" th:text="#{nav.home}">Home</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" th:href="@{/books-page(lang=${#locale.language})}" th:text="#{nav.books}">Books</a>
+                    <li class="nav-item" sec:authorize="isAuthenticated()">
+                        <a class="nav-link active" th:href="@{/books(lang=${#locale.language})}" th:text="#{nav.books}">Books</a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item" sec:authorize="isAuthenticated()">
                         <a class="nav-link" th:href="@{/orders(lang=${#locale.language})}" th:text="#{nav.orders}">Orders</a>
                     </li>
                 </ul>
@@ -61,13 +61,13 @@
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="languageDropdown">
                             <li>
-                                <a class="dropdown-item" th:href="@{/books-page(lang='en')}" th:classappend="${#locale.language == 'en'} ? 'active' : ''">
+                                <a class="dropdown-item" th:href="@{/books(lang='en')}" th:classappend="${#locale.language == 'en'} ? 'active' : ''">
                                     <i class="bi bi-flag me-2"></i>
                                     <span th:text="#{lang.english}">English</span>
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item" th:href="@{/books-page(lang='es')}" th:classappend="${#locale.language == 'es'} ? 'active' : ''">
+                                <a class="dropdown-item" th:href="@{/books(lang='es')}" th:classappend="${#locale.language == 'es'} ? 'active' : ''">
                                     <i class="bi bi-flag me-2"></i>
                                     <span th:text="#{lang.spanish}">Spanish</span>
                                 </a>

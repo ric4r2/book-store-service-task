@@ -55,10 +55,10 @@
                     <li class="nav-item">
                         <a class="nav-link active" th:href="@{/(lang=${#locale.language})}" th:text="#{nav.home}">Home</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/books-page(lang=${#locale.language})}" th:text="#{nav.books}">Books</a>
+                    <li class="nav-item" sec:authorize="isAuthenticated()">
+                        <a class="nav-link" th:href="@{/books(lang=${#locale.language})}" th:text="#{nav.books}">Books</a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item" sec:authorize="isAuthenticated()">
                         <a class="nav-link" th:href="@{/orders(lang=${#locale.language})}" th:text="#{nav.orders}">Orders</a>
                     </li>
                 </ul>
@@ -119,7 +119,11 @@
             <h1 class="display-4 mb-4" th:text="#{hero.title}">Welcome to Our Book Store</h1>
             <p class="lead mb-4" th:text="#{hero.subtitle}">Discover your next favorite book from our extensive collection</p>
             <div class="d-flex justify-content-center gap-3">
-                <a th:href="@{/books-page(lang=${#locale.language})}" class="btn btn-light btn-lg" th:text="#{hero.browse}">Browse Books</a>
+                <a sec:authorize="isAuthenticated()" th:href="@{/books(lang=${#locale.language})}" class="btn btn-light btn-lg" th:text="#{hero.browse}">Browse Books</a>
+                <div sec:authorize="!isAuthenticated()" class="d-flex gap-3">
+                    <a th:href="@{/login(lang=${#locale.language})}" class="btn btn-light btn-lg" th:text="#{nav.login}">Login</a>
+                    <a th:href="@{/register(lang=${#locale.language})}" class="btn btn-outline-light btn-lg" th:text="#{nav.register}">Register</a>
+                </div>
             </div>
         </div>
     </section>
