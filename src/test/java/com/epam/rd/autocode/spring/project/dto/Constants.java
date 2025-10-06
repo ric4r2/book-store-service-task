@@ -34,9 +34,9 @@ public class Constants {
 
     static class BookDTO {
         public static final String CLASS_NAME = "BookDTO";
-        public static final int CLASS_COUNT_FIELDS = 10;
+        public static final int CLASS_COUNT_FIELDS = 11;
         public static final int CLASS_COUNT_CONSTRUCTORS = 2;
-        public static final int PARAMETERS_IN_CONSTRUCTOR_WITH_PARAMETERS = 10;
+        public static final int PARAMETERS_IN_CONSTRUCTOR_WITH_PARAMETERS = 11;
     }
 
     static class BookItemDTO {
@@ -62,8 +62,8 @@ public class Constants {
 
     static class OrderDTO {
         public static final String CLASS_NAME = "OrderDTO";
-        public static final int CLASS_COUNT_FIELDS = 5;
+        public static final int CLASS_COUNT_FIELDS = 6;
         public static final int CLASS_COUNT_CONSTRUCTORS = 2;
-        public static final int PARAMETERS_IN_CONSTRUCTOR_WITH_PARAMETERS = 5;
+        public static final int PARAMETERS_IN_CONSTRUCTOR_WITH_PARAMETERS = 6;
     }
 }

@@ -87,7 +87,7 @@ public class OrderDTOTest {
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("No parameter with type " + Constants.LOCAL_DATE_TIME_TYPE));
 
-        assertEquals(5, parameters.size());
+        assertEquals(6, parameters.size());
     }
 
     @Test
@@ -109,6 +109,7 @@ public class OrderDTOTest {
     @DisplayName("Check field type and field name")
     @ParameterizedTest
     @CsvSource({
+            "java.lang.Long, id, 1",
             "java.lang.String, clientEmail, 1",
             "java.lang.String, employeeEmail, 1",
             "java.time.LocalDateTime, orderDate, 1",

@@ -70,7 +70,7 @@ public class Constants {
     static class Order {
         public static final String CLASS_NAME = "Order";
         public static final int CLASS_COUNT_FIELDS = 6;
-        public static final int CLASS_COUNT_CONSTRUCTORS = 2;
+        public static final int CLASS_COUNT_CONSTRUCTORS = 3;
         public static final int PARAMETERS_IN_CONSTRUCTOR_WITH_PARAMETERS = CLASS_COUNT_FIELDS;
     }
 
