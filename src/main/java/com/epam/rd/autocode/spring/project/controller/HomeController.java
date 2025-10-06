@@ -11,6 +11,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequiredArgsConstructor
@@ -31,14 +32,38 @@ public class HomeController {
     }
     
     @GetMapping(value = "/books", produces = "text/html")
-    public String books(Model model) {
+    public String books(Model model,
+                       @RequestParam(defaultValue = "") String search,
+                       @RequestParam(defaultValue = "0") int page,
+                       @RequestParam(defaultValue = "15") int size,
+                       @RequestParam(defaultValue = "name") String sort,
+                       @RequestParam(defaultValue = "asc") String direction) {
         try {
-            // Fetch books from the service (same data as REST endpoint)
-            model.addAttribute("books", bookService.getAllBooks());
+            // Use the new paginated search method
+            var booksPage = bookService.getBooks(search, page, size, sort, direction);
+            
+            model.addAttribute("booksPage", booksPage);
+            model.addAttribute("books", booksPage.getContent());
+            model.addAttribute("currentPage", page);
+            model.addAttribute("totalPages", booksPage.getTotalPages());
+            model.addAttribute("totalElements", booksPage.getTotalElements());
+            model.addAttribute("search", search);
+            model.addAttribute("sort", sort);
+            model.addAttribute("direction", direction);
+            model.addAttribute("size", size);
+            
         } catch (Exception e) {
             // In case of error, provide empty list
             model.addAttribute("books", java.util.Collections.emptyList());
+            model.addAttribute("booksPage", null);
             model.addAttribute("error", "Unable to load books at this time.");
+            model.addAttribute("currentPage", 0);
+            model.addAttribute("totalPages", 0);
+            model.addAttribute("totalElements", 0);
+            model.addAttribute("search", search);
+            model.addAttribute("sort", sort);
+            model.addAttribute("direction", direction);
+            model.addAttribute("size", size);
         }
         return "books";
     }

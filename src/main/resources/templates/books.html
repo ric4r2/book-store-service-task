@@ -215,6 +215,78 @@
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
                 
+                <!-- Search and Sorting Controls -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <form method="get" th:action="@{/books(lang=${#locale.language})}" class="row g-3 align-items-end">
+                            <!-- Search Input -->
+                            <div class="col-md-4">
+                                <label for="searchInput" class="form-label" th:text="#{books.search.label}">Search Books</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="bi bi-search"></i>
+                                    </span>
+                                    <input type="text" class="form-control" id="searchInput" name="search" 
+                                           th:value="${search}" th:placeholder="#{books.search.placeholder}">
+                                </div>
+                            </div>
+                            
+                            <!-- Sort By -->
+                            <div class="col-md-3">
+                                <label for="sortSelect" class="form-label" th:text="#{books.sort.label}">Sort By</label>
+                                <select class="form-select" id="sortSelect" name="sort">
+                                    <option value="name" th:selected="${sort == 'name'}" th:text="#{books.sort.name}">Name</option>
+                                    <option value="price" th:selected="${sort == 'price'}" th:text="#{books.sort.price}">Price</option>
+                                    <option value="author" th:selected="${sort == 'author'}" th:text="#{books.sort.author}">Author</option>
+                                    <option value="publicationDate" th:selected="${sort == 'publicationDate'}" th:text="#{books.sort.date}">Publication Date</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Sort Direction -->
+                            <div class="col-md-2">
+                                <label for="directionSelect" class="form-label" th:text="#{books.sort.direction}">Direction</label>
+                                <select class="form-select" id="directionSelect" name="direction">
+                                    <option value="asc" th:selected="${direction == 'asc'}" th:text="#{books.sort.asc}">Ascending</option>
+                                    <option value="desc" th:selected="${direction == 'desc'}" th:text="#{books.sort.desc}">Descending</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Items per page -->
+                            <div class="col-md-2">
+                                <label for="sizeSelect" class="form-label" th:text="#{books.pagination.size}">Per Page</label>
+                                <select class="form-select" id="sizeSelect" name="size">
+                                    <option value="10" th:selected="${size == 10}">10</option>
+                                    <option value="15" th:selected="${size == 15}">15</option>
+                                    <option value="25" th:selected="${size == 25}">25</option>
+                                    <option value="50" th:selected="${size == 50}">50</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Search Button -->
+                            <div class="col-md-1">
+                                <button type="submit" class="btn btn-primary w-100" th:text="#{books.search.button}">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                            </div>
+                        </form>
+                        
+                        <!-- Results Summary -->
+                        <div th:if="${booksPage != null}" class="mt-3">
+                            <small class="text-muted">
+                                <span th:text="#{books.results.showing}">Showing</span>
+                                <strong th:text="${booksPage.numberOfElements}">0</strong>
+                                <span th:text="#{books.results.of}">of</span>
+                                <strong th:text="${totalElements}">0</strong>
+                                <span th:text="#{books.results.books}">books</span>
+                                <span th:if="${search != null and !search.isEmpty()}">
+                                    <span th:text="#{books.results.for}">for</span>
+                                    "<strong th:text="${search}">search term</strong>"
+                                </span>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+                
                 <!-- Books display -->
                 <div th:if="${books != null and not #lists.isEmpty(books)}" class="row">
                     <div th:each="book : ${books}" class="col-md-6 col-lg-4 mb-4">
@@ -353,6 +425,68 @@
                             </div>
                         </div>
                     </div>
+                </div>
+                
+                <!-- Pagination Controls -->
+                <div th:if="${booksPage != null and totalPages > 1}" class="d-flex justify-content-center mt-4">
+                    <nav aria-label="Books pagination">
+                        <ul class="pagination">
+                            <!-- First Page -->
+                            <li class="page-item" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
+                                <a class="page-link" th:href="@{/books(lang=${#locale.language}, search=${search}, page=0, size=${size}, sort=${sort}, direction=${direction})}"
+                                   th:text="#{books.pagination.first}">First</a>
+                            </li>
+                            
+                            <!-- Previous Page -->
+                            <li class="page-item" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
+                                <a class="page-link" th:href="@{/books(lang=${#locale.language}, search=${search}, page=${currentPage - 1}, size=${size}, sort=${sort}, direction=${direction})}"
+                                   th:text="#{books.pagination.previous}">Previous</a>
+                            </li>
+                            
+                            <!-- Page Numbers (show 5 pages around current) -->
+                            <th:block th:with="startPage=${currentPage > 2 ? currentPage - 2 : 0}, 
+                                             endPage=${currentPage + 2 < totalPages - 1 ? currentPage + 2 : totalPages - 1}">
+                                
+                                <!-- Show first page if not in range -->
+                                <li th:if="${startPage > 0}" class="page-item">
+                                    <a class="page-link" th:href="@{/books(lang=${#locale.language}, search=${search}, page=0, size=${size}, sort=${sort}, direction=${direction})}">1</a>
+                                </li>
+                                <li th:if="${startPage > 1}" class="page-item disabled">
+                                    <span class="page-link">...</span>
+                                </li>
+                                
+                                <!-- Page range -->
+                                <li th:each="page : ${#numbers.sequence(startPage, endPage)}" 
+                                    class="page-item" th:classappend="${page == currentPage ? 'active' : ''}">
+                                    <a class="page-link" 
+                                       th:href="@{/books(lang=${#locale.language}, search=${search}, page=${page}, size=${size}, sort=${sort}, direction=${direction})}"
+                                       th:text="${page + 1}">1</a>
+                                </li>
+                                
+                                <!-- Show last page if not in range -->
+                                <li th:if="${endPage < totalPages - 2}" class="page-item disabled">
+                                    <span class="page-link">...</span>
+                                </li>
+                                <li th:if="${endPage < totalPages - 1}" class="page-item">
+                                    <a class="page-link" 
+                                       th:href="@{/books(lang=${#locale.language}, search=${search}, page=${totalPages - 1}, size=${size}, sort=${sort}, direction=${direction})}"
+                                       th:text="${totalPages}">Last</a>
+                                </li>
+                            </th:block>
+                            
+                            <!-- Next Page -->
+                            <li class="page-item" th:classappend="${currentPage >= totalPages - 1 ? 'disabled' : ''}">
+                                <a class="page-link" th:href="@{/books(lang=${#locale.language}, search=${search}, page=${currentPage + 1}, size=${size}, sort=${sort}, direction=${direction})}"
+                                   th:text="#{books.pagination.next}">Next</a>
+                            </li>
+                            
+                            <!-- Last Page -->
+                            <li class="page-item" th:classappend="${currentPage >= totalPages - 1 ? 'disabled' : ''}">
+                                <a class="page-link" th:href="@{/books(lang=${#locale.language}, search=${search}, page=${totalPages - 1}, size=${size}, sort=${sort}, direction=${direction})}"
+                                   th:text="#{books.pagination.last}">Last</a>
+                            </li>
+                        </ul>
+                    </nav>
                 </div>
                 
                 <!-- No books message -->
