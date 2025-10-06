@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="#{page.clients.title}">Clients - Book Store Service</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <style>
+        .navbar-brand {
+            font-weight: bold;
+        }
+        .dropdown-item.active {
+            background-color: #667eea;
+            color: white;
+        }
+        .dropdown-item.active:hover {
+            background-color: #5a6fd8;
+            color: white;
+        }
+        .clients-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+        }
+        .client-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .client-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        .balance-badge {
+            font-size: 1.1rem;
+            padding: 0.5rem 1rem;
+        }
+        .search-box {
+            border-radius: 25px;
+            padding: 0.75rem 1.5rem;
+            border: 2px solid #e9ecef;
+            transition: border-color 0.3s;
+        }
+        .search-box:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        .stats-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .client-info {
+            border-left: 4px solid #667eea;
+            padding-left: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/" th:href="@{/(lang=${#locale.language})}">
+                <i class="bi bi-book"></i>
+                <span th:text="#{navbar.brand}">Book Store</span>
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/(lang=${#locale.language})}" th:text="#{nav.home}">Home</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="isAuthenticated()">
+                        <a class="nav-link" th:href="@{/books(lang=${#locale.language})}" th:text="#{nav.books}">Books</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="isAuthenticated()">
+                        <a class="nav-link" th:href="@{/orders(lang=${#locale.language})}" th:text="#{nav.orders}">Orders</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="hasRole('EMPLOYEE')">
+                        <a class="nav-link active" th:href="@{/clients(lang=${#locale.language})}" th:text="#{nav.clients}">Clients</a>
+                    </li>
+                </ul>
+                
+                <!-- Authentication Section -->
+                <ul class="navbar-nav">
+                    <!-- Language Selector -->
+                    <li class="nav-item dropdown me-3">
+                        <a class="nav-link dropdown-toggle" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-globe"></i>
+                            <span th:text="#{lang.selector.title}">Language</span>
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="languageDropdown">
+                            <li>
+                                <a class="dropdown-item" th:href="@{/clients(lang='en')}" th:classappend="${#locale.language == 'en'} ? 'active' : ''">
+                                    <i class="bi bi-flag me-2"></i>
+                                    <span th:text="#{lang.english}">English</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" th:href="@{/clients(lang='es')}" th:classappend="${#locale.language == 'es'} ? 'active' : ''">
+                                    <i class="bi bi-flag me-2"></i>
+                                    <span th:text="#{lang.spanish}">Spanish</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    
+                    <li class="nav-item" sec:authorize="!isAuthenticated()">
+                        <a class="nav-link" th:href="@{/login(lang=${#locale.language})}" th:text="#{nav.login}">Login</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="!isAuthenticated()">
+                        <a class="nav-link" th:href="@{/register(lang=${#locale.language})}" th:text="#{nav.register}">Register</a>
+                    </li>
+                    <li class="nav-item dropdown" sec:authorize="isAuthenticated()">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person"></i>
+                            <span sec:authentication="name">User</span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" th:href="@{/profile(lang=${#locale.language})}" th:text="#{nav.profile}">Profile</a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form th:action="@{/logout}" method="post" class="d-inline">
+                                    <input type="hidden" name="lang" th:value="${#locale.language}">
+                                    <button type="submit" class="dropdown-item" th:text="#{nav.logout}">Logout</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Clients Header -->
+    <div class="clients-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="display-4 mb-3" th:text="#{page.clients.heading}">Registered Clients</h1>
+                    <p class="lead mb-0" th:text="#{page.clients.description}">View and manage all registered clients in the system.</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <i class="bi bi-people-fill" style="font-size: 5rem; opacity: 0.7;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Success/Error Messages -->
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle"></i>
+            <span th:text="${success}">Success message</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle"></i>
+            <span th:text="${error}">Error message</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- Statistics -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="stats-card">
+                    <i class="bi bi-people display-4 mb-3"></i>
+                    <h3 th:text="${clients != null ? #lists.size(clients) : 0}">0</h3>
+                    <p class="mb-0" th:text="#{page.clients.total}">Total Clients</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search Box -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input type="text" id="clientSearch" class="form-control search-box" th:placeholder="#{page.clients.search.placeholder}" placeholder="Search clients by name or email...">
+                </div>
+            </div>
+        </div>
+
+        <!-- Clients List -->
+        <div class="row" id="clientsList">
+            <!-- No Clients Message -->
+            <div th:if="${clients == null or #lists.isEmpty(clients)}" class="col-12">
+                <div class="text-center py-5">
+                    <i class="bi bi-people display-1 text-muted mb-3"></i>
+                    <h3 class="text-muted" th:text="#{page.clients.noclients}">No clients registered at the moment.</h3>
+                </div>
+            </div>
+
+            <!-- Client Cards -->
+            <div th:each="client : ${clients}" class="col-md-6 col-lg-4 client-item" 
+                 th:data-name="${client.name?.toLowerCase()}" 
+                 th:data-email="${client.email?.toLowerCase()}">
+                <div class="client-card">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="bg-primary rounded-circle p-3 me-3">
+                            <i class="bi bi-person-fill text-white"></i>
+                        </div>
+                        <div class="client-info">
+                            <h5 class="mb-1" th:text="${client.name}">Client Name</h5>
+                            <small class="text-muted" th:text="${client.email}">client@email.com</small>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="text-muted small" th:text="#{page.clients.table.balance}">Balance:</span>
+                            <br>
+                            <span class="badge bg-success balance-badge" th:text="'$' + ${client.balance}">$0.00</span>
+                        </div>
+                        <div>
+                            <button class="btn btn-outline-primary btn-sm client-details-btn" type="button" 
+                                    th:data-client-name="${client.name}"
+                                    th:data-client-email="${client.email}"
+                                    th:data-client-balance="${client.balance}">
+                                <i class="bi bi-eye"></i>
+                                Details
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Client Details Modal -->
+    <div class="modal fade" id="clientDetailsModal" tabindex="-1" aria-labelledby="clientDetailsModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="clientDetailsModalLabel">Client Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-4 text-center mb-3">
+                            <div class="bg-primary rounded-circle p-4 d-inline-block">
+                                <i class="bi bi-person-fill text-white" style="font-size: 2rem;"></i>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <h4 id="modalClientName">Client Name</h4>
+                            <p class="text-muted mb-2">
+                                <i class="bi bi-envelope me-2"></i>
+                                <span id="modalClientEmail">client@email.com</span>
+                            </p>
+                            <p class="mb-2">
+                                <i class="bi bi-wallet2 me-2"></i>
+                                <strong>Balance: <span id="modalClientBalance" class="text-success">$0.00</span></strong>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Client search functionality
+        document.getElementById('clientSearch').addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const clientItems = document.querySelectorAll('.client-item');
+            
+            clientItems.forEach(function(item) {
+                const name = item.getAttribute('data-name') || '';
+                const email = item.getAttribute('data-email') || '';
+                
+                if (name.includes(searchTerm) || email.includes(searchTerm)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+
+        // Handle client details button clicks using event delegation
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.client-details-btn')) {
+                const button = e.target.closest('.client-details-btn');
+                const name = button.getAttribute('data-client-name');
+                const email = button.getAttribute('data-client-email');
+                const balance = button.getAttribute('data-client-balance');
+                
+                showClientDetails(name, email, balance);
+            }
+        });
+
+        // Show client details modal
+        function showClientDetails(name, email, balance) {
+            document.getElementById('modalClientName').textContent = name;
+            document.getElementById('modalClientEmail').textContent = email;
+            document.getElementById('modalClientBalance').textContent = '$' + balance;
+            
+            const modal = new bootstrap.Modal(document.getElementById('clientDetailsModal'));
+            modal.show();
+        }
+    </script>
+</body>
+</html>
