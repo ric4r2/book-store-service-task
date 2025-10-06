@@ -34,7 +34,6 @@ public class CartController {
     @Autowired
     private OrderService orderService;
 
-    // Cart item structure
     public static class CartItem {
         private BookDTO book;
         private Integer quantity;
@@ -44,7 +43,6 @@ public class CartController {
             this.quantity = quantity;
         }
         
-        // Getters and setters
         public BookDTO getBook() { return book; }
         public void setBook(BookDTO book) { this.book = book; }
         public Integer getQuantity() { return quantity; }
@@ -62,17 +60,14 @@ public class CartController {
                            RedirectAttributes redirectAttributes,
                            HttpServletRequest request) {
         try {
-            // Get cart from session
             @SuppressWarnings("unchecked")
             Map<String, CartItem> cart = (Map<String, CartItem>) session.getAttribute("cart");
             if (cart == null) {
                 cart = new HashMap<>();
             }
             
-            // Get book details
             BookDTO book = bookService.getBookByName(bookName);
             
-            // Add or update cart item
             if (cart.containsKey(bookName)) {
                 CartItem existingItem = cart.get(bookName);
                 existingItem.setQuantity(existingItem.getQuantity() + quantity);
@@ -80,7 +75,6 @@ public class CartController {
                 cart.put(bookName, new CartItem(book, quantity));
             }
             
-            // Save cart to session
             session.setAttribute("cart", cart);
             
             redirectAttributes.addFlashAttribute("success", 
@@ -181,20 +175,16 @@ public class CartController {
                 return "redirect:/cart" + (lang != null ? "?lang=" + lang : "");
             }
             
-            // Create order DTO
             OrderDTO orderDTO = new OrderDTO();
             orderDTO.setClientEmail(authentication.getName());
             orderDTO.setOrderDate(LocalDateTime.now());
-            // Employee will be null for pending approval
             orderDTO.setEmployeeEmail(null);
             
-            // Calculate total and create book items
             BigDecimal total = BigDecimal.ZERO;
             List<BookItemDTO> bookItems = new ArrayList<>();
             
             for (CartItem cartItem : cart.values()) {
                 BookItemDTO bookItemDTO = new BookItemDTO();
-                // Create a Book entity with just the ID - OrderService will fetch the full entity
                 BookDTO bookDTO = cartItem.getBook();
                 if (bookDTO.getId() == null) {
                     throw new RuntimeException("Book ID is missing in cart item: " + bookDTO.getName());
@@ -202,7 +192,7 @@ public class CartController {
                 
                 Book book = new Book();
                 book.setId(bookDTO.getId());
-                book.setName(bookDTO.getName()); // Keep name for logging/debugging
+                book.setName(bookDTO.getName());
                 bookItemDTO.setBook(book);
                 bookItemDTO.setQuantity(cartItem.getQuantity());
                 bookItems.add(bookItemDTO);
@@ -213,10 +203,8 @@ public class CartController {
             orderDTO.setPrice(total);
             orderDTO.setBookItems(bookItems);
             
-            // Create the order
             orderService.addOrder(orderDTO);
             
-            // Clear the cart
             session.removeAttribute("cart");
             
             redirectAttributes.addFlashAttribute("success", "Order created successfully! Waiting for approval.");

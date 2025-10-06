@@ -19,8 +19,6 @@ public class EmployeeController {
     @Autowired
     private EmployeeService employeeService;
     
-    // HTML Form Handling Methods for Profile Management
-    
     @PostMapping("/profile/update")
     @PreAuthorize("hasRole('EMPLOYEE')")
     public String updateEmployeeProfile(HttpServletRequest request,
@@ -29,22 +27,18 @@ public class EmployeeController {
         try {
             String userEmail = authentication.getName();
             
-            // Create EmployeeDTO from form parameters
             EmployeeDTO employeeDto = new EmployeeDTO();
             employeeDto.setEmail(userEmail);
             employeeDto.setName(request.getParameter("name"));
             employeeDto.setPhone(request.getParameter("phone"));
             
-            // Handle birth date
             String birthDateStr = request.getParameter("birthDate");
             if (birthDateStr != null && !birthDateStr.trim().isEmpty()) {
                 employeeDto.setBirthDate(LocalDate.parse(birthDateStr));
             }
             
-            // Handle password
             String password = request.getParameter("password");
             if (password == null || password.trim().isEmpty()) {
-                // Keep current password
                 EmployeeDTO currentEmployee = employeeService.getEmployeeByEmail(userEmail);
                 employeeDto.setPassword(currentEmployee.getPassword());
             } else {
@@ -70,10 +64,9 @@ public class EmployeeController {
         try {
             String userEmail = authentication.getName();
             
-            // Get current language parameter
             String lang = request.getParameter("lang");
             if (lang == null) {
-                lang = "en"; // default fallback
+                lang = "en";
             }
             
             employeeService.deleteEmployeeByEmail(userEmail);

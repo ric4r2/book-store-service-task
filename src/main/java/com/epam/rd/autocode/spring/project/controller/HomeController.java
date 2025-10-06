@@ -27,7 +27,6 @@ public class HomeController {
     
     @GetMapping("/")
     public String home(Model model) {
-        // Add some sample data to display in the template
         model.addAttribute("totalBooks", "12,500+");
         model.addAttribute("totalCustomers", "8,200+");
         model.addAttribute("totalOrders", "35,000+");
@@ -43,7 +42,6 @@ public class HomeController {
                        @RequestParam(defaultValue = "name") String sort,
                        @RequestParam(defaultValue = "asc") String direction) {
         try {
-            // Use the new paginated search method
             var booksPage = bookService.getBooks(search, page, size, sort, direction);
             
             model.addAttribute("booksPage", booksPage);
@@ -57,7 +55,6 @@ public class HomeController {
             model.addAttribute("size", size);
             
         } catch (Exception e) {
-            // In case of error, provide empty list
             model.addAttribute("books", java.util.Collections.emptyList());
             model.addAttribute("booksPage", null);
             model.addAttribute("error", "Unable to load books at this time.");
@@ -101,11 +98,9 @@ public class HomeController {
             boolean isEmployee = authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_EMPLOYEE"));
             
             if (isEmployee) {
-                // Employee sees all orders
                 model.addAttribute("orders", orderService.getAllOrders());
                 model.addAttribute("isEmployee", true);
             } else {
-                // Client sees only their own orders
                 model.addAttribute("orders", orderService.getOrdersByClient(userEmail));
                 model.addAttribute("isEmployee", false);
             }

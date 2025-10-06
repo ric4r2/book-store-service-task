@@ -21,7 +21,6 @@ public class PasswordEncryptionDataLoader implements CommandLineRunner {
     public void run(String... args) throws Exception {
         log.info("Starting password encryption for existing users...");
         
-        // Encrypt employee passwords if they're not already encrypted
         employeeRepository.findAll().forEach(employee -> {
             if (!isPasswordEncrypted(employee.getPassword())) {
                 String originalPassword = employee.getPassword();
@@ -31,7 +30,6 @@ public class PasswordEncryptionDataLoader implements CommandLineRunner {
             }
         });
         
-        // Encrypt client passwords if they're not already encrypted
         clientRepository.findAll().forEach(client -> {
             if (!isPasswordEncrypted(client.getPassword())) {
                 String originalPassword = client.getPassword();
@@ -45,7 +43,6 @@ public class PasswordEncryptionDataLoader implements CommandLineRunner {
     }
     
     private boolean isPasswordEncrypted(String password) {
-        // BCrypt hashes start with $2a$, $2b$, $2x$, or $2y$ and are 60 characters long
         return password != null && password.length() == 60 && password.startsWith("$2");
     }
 }

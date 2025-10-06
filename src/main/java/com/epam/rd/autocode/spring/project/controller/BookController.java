@@ -21,8 +21,6 @@ public class BookController {
     @Autowired
     private BookService bookService;
     
-    // HTML Form Handling Methods for Book Management
-    
     @PostMapping("/add")
     @PreAuthorize("hasRole('EMPLOYEE')")
     public String addBook(HttpServletRequest request, RedirectAttributes redirectAttributes) {
@@ -38,7 +36,6 @@ public class BookController {
             bookDto.setDescription(request.getParameter("description"));
             bookDto.setLanguage(Language.valueOf(request.getParameter("language")));
             
-            // Parse publication date
             String publicationDateStr = request.getParameter("publicationDate");
             if (publicationDateStr != null && !publicationDateStr.trim().isEmpty()) {
                 bookDto.setPublicationDate(LocalDate.parse(publicationDateStr));
@@ -70,7 +67,6 @@ public class BookController {
             bookDto.setDescription(request.getParameter("description"));
             bookDto.setLanguage(Language.valueOf(request.getParameter("language")));
             
-            // Parse publication date
             String publicationDateStr = request.getParameter("publicationDate");
             if (publicationDateStr != null && !publicationDateStr.trim().isEmpty()) {
                 bookDto.setPublicationDate(LocalDate.parse(publicationDateStr));

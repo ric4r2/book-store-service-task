@@ -32,10 +32,10 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/index").permitAll()
-                        .requestMatchers("/clients").permitAll()  // REST API endpoints
-                        .requestMatchers("/books").authenticated()  // Both HTML page and REST API require auth
-                        .requestMatchers("/orders").authenticated()  // HTML page requires auth
-                        .requestMatchers("/profile/**").authenticated()  // Profile pages require auth
+                        .requestMatchers("/clients").permitAll()
+                        .requestMatchers("/books").authenticated()
+                        .requestMatchers("/orders").authenticated()
+                        .requestMatchers("/profile/**").authenticated()
                         .requestMatchers("/register").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/login").permitAll()

@@ -28,7 +28,6 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         log.debug("Attempting to load user by email: {}", email);
         
-        // First, try to find the user as an employee
         Optional<Employee> employeeOptional = employeeRepository.findByEmail(email);
         if (employeeOptional.isPresent()) {
             Employee employee = employeeOptional.get();
@@ -45,7 +44,6 @@ public class CustomUserDetailsService implements UserDetailsService {
                     .build();
         }
         
-        // If not found as employee, try to find as client
         Optional<Client> clientOptional = clientRepository.findByEmail(email);
         if (clientOptional.isPresent()) {
             Client client = clientOptional.get();

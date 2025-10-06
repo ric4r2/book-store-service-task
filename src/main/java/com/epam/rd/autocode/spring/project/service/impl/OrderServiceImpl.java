@@ -76,12 +76,12 @@ public class OrderServiceImpl implements OrderService {
         order.setEmployee(employee);
         order.setOrderDate(orderDTO.getOrderDate());
         order.setPrice(orderDTO.getPrice());
-        order.setBookItems(new ArrayList<>());  // Initialize the bookItems list
+        order.setBookItems(new ArrayList<>());
 
         for (BookItemDTO itemDTO : orderDTO.getBookItems()) {
             Book book = itemDTO.getBook();
             if (book.getId() != null) {
-                Long bookId = book.getId();  // Store the ID in a separate final variable
+                Long bookId = book.getId();
                 book = bookRepository.findById(bookId)
                         .orElseThrow(() -> new NotFoundException("Book not found with id: " + bookId));
             }

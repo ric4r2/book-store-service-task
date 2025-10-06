@@ -94,7 +94,6 @@ public class BookServiceImpl implements BookService {
         log.debug("Fetching books with search: '{}', page: {}, size: {}, sortBy: {}, direction: {}", 
                   search, page, size, sortBy, sortDirection);
         
-        // Validate and set default sort parameters
         if (sortBy == null || sortBy.trim().isEmpty()) {
             sortBy = "name";
         }
@@ -102,16 +101,12 @@ public class BookServiceImpl implements BookService {
             sortDirection = "asc";
         }
         
-        // Create sort object
         Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
         
-        // Create pageable object
         Pageable pageable = PageRequest.of(page, size, sort);
         
-        // Execute search
         Page<Book> bookPage = bookRepository.findBooksWithSearch(search, pageable);
         
-        // Convert to DTO page
         return bookPage.map(book -> modelMapper.map(book, BookDTO.class));
     }
 }

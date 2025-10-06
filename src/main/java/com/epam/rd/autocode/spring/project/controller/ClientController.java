@@ -18,8 +18,6 @@ public class ClientController {
     @Autowired
     private ClientService clientService;
     
-    // Page rendering for employees to view all clients
-    
     @GetMapping
     @PreAuthorize("hasRole('EMPLOYEE')")
     public String clientsPage(Model model) {
@@ -32,8 +30,6 @@ public class ClientController {
         return "clients";
     }
     
-    // HTML Form Handling Methods for Profile Management
-    
     @PostMapping("/profile/update")
     @PreAuthorize("hasRole('CLIENT')")
     public String updateClientProfile(HttpServletRequest request,
@@ -42,15 +38,12 @@ public class ClientController {
         try {
             String userEmail = authentication.getName();
             
-            // Create ClientDTO from form parameters
             ClientDTO clientDto = new ClientDTO();
             clientDto.setEmail(userEmail);
             clientDto.setName(request.getParameter("name"));
             
-            // Handle password
             String password = request.getParameter("password");
             if (password == null || password.trim().isEmpty()) {
-                // Keep current password and balance
                 ClientDTO currentClient = clientService.getClientByEmail(userEmail);
                 clientDto.setPassword(currentClient.getPassword());
                 clientDto.setBalance(currentClient.getBalance());
@@ -79,10 +72,9 @@ public class ClientController {
         try {
             String userEmail = authentication.getName();
             
-            // Get current language parameter
             String lang = request.getParameter("lang");
             if (lang == null) {
-                lang = "en"; // default fallback
+                lang = "en";
             }
             
             clientService.deleteClientByEmail(userEmail);

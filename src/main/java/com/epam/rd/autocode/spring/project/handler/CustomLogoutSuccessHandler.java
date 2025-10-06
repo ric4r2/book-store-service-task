@@ -24,11 +24,9 @@ public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, 
                               Authentication authentication) throws IOException, ServletException {
         
-        // Get the current locale from the session
         Locale currentLocale = localeResolver.resolveLocale(request);
         String language = currentLocale.getLanguage();
         
-        // Redirect to home page with logout parameter and language preserved
         String redirectUrl = "/?logout&lang=" + language;
         response.sendRedirect(redirectUrl);
     }
