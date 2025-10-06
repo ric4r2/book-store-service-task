@@ -8,7 +8,6 @@ import com.epam.rd.autocode.spring.project.service.BookService;
 import com.epam.rd.autocode.spring.project.service.OrderService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -34,9 +33,6 @@ public class CartController {
     
     @Autowired
     private OrderService orderService;
-    
-    @Autowired
-    private ModelMapper modelMapper;
 
     // Cart item structure
     public static class CartItem {
@@ -198,8 +194,15 @@ public class CartController {
             
             for (CartItem cartItem : cart.values()) {
                 BookItemDTO bookItemDTO = new BookItemDTO();
-                // Convert BookDTO to Book entity
-                Book book = modelMapper.map(cartItem.getBook(), Book.class);
+                // Create a Book entity with just the ID - OrderService will fetch the full entity
+                BookDTO bookDTO = cartItem.getBook();
+                if (bookDTO.getId() == null) {
+                    throw new RuntimeException("Book ID is missing in cart item: " + bookDTO.getName());
+                }
+                
+                Book book = new Book();
+                book.setId(bookDTO.getId());
+                book.setName(bookDTO.getName()); // Keep name for logging/debugging
                 bookItemDTO.setBook(book);
                 bookItemDTO.setQuantity(cartItem.getQuantity());
                 bookItems.add(bookItemDTO);

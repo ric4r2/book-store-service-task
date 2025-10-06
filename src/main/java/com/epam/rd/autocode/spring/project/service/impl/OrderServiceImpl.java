@@ -100,7 +100,7 @@ public class OrderServiceImpl implements OrderService {
 
     private OrderDTO convertToDTO(Order order) {
         OrderDTO dto = new OrderDTO();
-//        dto.setId(order.getId());
+        dto.setId(order.getId());
         dto.setClientEmail(order.getClient().getEmail());
         if (order.getEmployee() != null) {
             dto.setEmployeeEmail(order.getEmployee().getEmail());

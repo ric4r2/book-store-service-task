@@ -15,6 +15,8 @@ import java.util.List;
 @NoArgsConstructor
 public class OrderDTO {
     
+    private Long id;
+    
     @NotNull(message = "{validation.client.email.notnull}")
     @Email(message = "{validation.email.invalid}")
     private String clientEmail;
