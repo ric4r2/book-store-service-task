@@ -99,7 +99,7 @@
                             <span sec:authentication="name">User</span>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" th:href="@{/profile}" th:text="#{nav.profile}">Profile</a></li>
+                            <li><a class="dropdown-item" th:href="@{/profile(lang=${#locale.language})}" th:text="#{nav.profile}">Profile</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li>
                                 <form th:action="@{/logout}" method="post" class="d-inline">

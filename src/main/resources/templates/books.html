@@ -88,6 +88,10 @@
                         </a>
                         <ul class="dropdown-menu">
                             <li>
+                                <a class="dropdown-item" th:href="@{/profile(lang=${#locale.language})}" th:text="#{nav.profile}">Profile</a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
                                 <form th:action="@{/logout}" method="post" class="d-inline">
                                     <input type="hidden" name="lang" th:value="${#locale.language}">
                                     <button type="submit" class="dropdown-item" th:text="#{nav.logout}">Logout</button>
