@@ -2,50 +2,87 @@ package com.epam.rd.autocode.spring.project.controller;
 
 import com.epam.rd.autocode.spring.project.dto.EmployeeDTO;
 import com.epam.rd.autocode.spring.project.service.EmployeeService;
-import jakarta.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.List;
+import java.time.LocalDate;
 
-@RestController
+@Controller
 @RequestMapping("/employees")
 public class EmployeeController {
 
     @Autowired
     private EmployeeService employeeService;
-
-    @GetMapping
+    
+    // HTML Form Handling Methods for Profile Management
+    
+    @PostMapping("/profile/update")
     @PreAuthorize("hasRole('EMPLOYEE')")
-    public ResponseEntity<List<EmployeeDTO>> getAllEmployees() {
-        return ResponseEntity.ok(employeeService.getAllEmployees());
+    public String updateEmployeeProfile(HttpServletRequest request,
+                                      Authentication authentication,
+                                      RedirectAttributes redirectAttributes) {
+        try {
+            String userEmail = authentication.getName();
+            
+            // Create EmployeeDTO from form parameters
+            EmployeeDTO employeeDto = new EmployeeDTO();
+            employeeDto.setEmail(userEmail);
+            employeeDto.setName(request.getParameter("name"));
+            employeeDto.setPhone(request.getParameter("phone"));
+            
+            // Handle birth date
+            String birthDateStr = request.getParameter("birthDate");
+            if (birthDateStr != null && !birthDateStr.trim().isEmpty()) {
+                employeeDto.setBirthDate(LocalDate.parse(birthDateStr));
+            }
+            
+            // Handle password
+            String password = request.getParameter("password");
+            if (password == null || password.trim().isEmpty()) {
+                // Keep current password
+                EmployeeDTO currentEmployee = employeeService.getEmployeeByEmail(userEmail);
+                employeeDto.setPassword(currentEmployee.getPassword());
+            } else {
+                employeeDto.setPassword(password);
+            }
+            
+            employeeService.updateEmployeeByEmail(userEmail, employeeDto);
+            redirectAttributes.addFlashAttribute("success", "Employee profile updated successfully!");
+            
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Failed to update profile: " + e.getMessage());
+        }
+        
+        String lang = request.getParameter("lang");
+        return "redirect:/profile" + (lang != null ? "?lang=" + lang : "");
     }
-
-    @GetMapping("/{email}")
+    
+    @PostMapping("/profile/delete")
     @PreAuthorize("hasRole('EMPLOYEE')")
-    public ResponseEntity<EmployeeDTO> getEmployeeByEmail(@PathVariable String email) {
-        return ResponseEntity.ok(employeeService.getEmployeeByEmail(email));
-    }
-
-    @PostMapping
-    @PreAuthorize("hasRole('EMPLOYEE')")
-    public ResponseEntity<EmployeeDTO> addEmployee(@Valid @RequestBody EmployeeDTO employeeDTO) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(employeeService.addEmployee(employeeDTO));
-    }
-
-    @PutMapping("/{email}")
-    @PreAuthorize("hasRole('EMPLOYEE') and #email == authentication.principal.username")
-    public ResponseEntity<EmployeeDTO> updateEmployeeByEmail(@PathVariable String email, @Valid @RequestBody EmployeeDTO employeeDTO) {
-        return ResponseEntity.ok(employeeService.updateEmployeeByEmail(email, employeeDTO));
-    }
-
-    @DeleteMapping("/{email}")
-    @PreAuthorize("hasRole('EMPLOYEE') and #email == authentication.principal.username")
-    public ResponseEntity<Void> deleteEmployeeByEmail(@PathVariable String email) {
-        employeeService.deleteEmployeeByEmail(email);
-        return ResponseEntity.noContent().build();
+    public String deleteEmployeeProfile(Authentication authentication, 
+                                      RedirectAttributes redirectAttributes,
+                                      HttpServletRequest request) {
+        try {
+            String userEmail = authentication.getName();
+            
+            // Get current language parameter
+            String lang = request.getParameter("lang");
+            if (lang == null) {
+                lang = "en"; // default fallback
+            }
+            
+            employeeService.deleteEmployeeByEmail(userEmail);
+            redirectAttributes.addFlashAttribute("success", "Account deleted successfully!");
+            return "redirect:/logout?lang=" + lang;
+            
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Failed to delete account: " + e.getMessage());
+            return "redirect:/profile";
+        }
     }
 }

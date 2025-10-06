@@ -2,49 +2,81 @@ package com.epam.rd.autocode.spring.project.controller;
 
 import com.epam.rd.autocode.spring.project.dto.ClientDTO;
 import com.epam.rd.autocode.spring.project.service.ClientService;
-import jakarta.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.List;
-
-@RestController
+@Controller
 @RequestMapping("/clients")
 public class ClientController {
 
     @Autowired
     private ClientService clientService;
-
-    @GetMapping
-    @PreAuthorize("hasRole('EMPLOYEE')")
-    public ResponseEntity<List<ClientDTO>> getAllClients() {
-        return ResponseEntity.ok(clientService.getAllClients());
+    
+    // HTML Form Handling Methods for Profile Management
+    
+    @PostMapping("/profile/update")
+    @PreAuthorize("hasRole('CLIENT')")
+    public String updateClientProfile(HttpServletRequest request,
+                                    Authentication authentication,
+                                    RedirectAttributes redirectAttributes) {
+        try {
+            String userEmail = authentication.getName();
+            
+            // Create ClientDTO from form parameters
+            ClientDTO clientDto = new ClientDTO();
+            clientDto.setEmail(userEmail);
+            clientDto.setName(request.getParameter("name"));
+            
+            // Handle password
+            String password = request.getParameter("password");
+            if (password == null || password.trim().isEmpty()) {
+                // Keep current password and balance
+                ClientDTO currentClient = clientService.getClientByEmail(userEmail);
+                clientDto.setPassword(currentClient.getPassword());
+                clientDto.setBalance(currentClient.getBalance());
+            } else {
+                ClientDTO currentClient = clientService.getClientByEmail(userEmail);
+                clientDto.setPassword(password);
+                clientDto.setBalance(currentClient.getBalance());
+            }
+            
+            clientService.updateClientByEmail(userEmail, clientDto);
+            redirectAttributes.addFlashAttribute("success", "Client profile updated successfully!");
+            
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Failed to update profile: " + e.getMessage());
+        }
+        
+        String lang = request.getParameter("lang");
+        return "redirect:/profile" + (lang != null ? "?lang=" + lang : "");
     }
-
-    @GetMapping("/{email}")
-    @PreAuthorize("hasRole('EMPLOYEE') or #email == authentication.principal.username")
-    public ResponseEntity<ClientDTO> getClientByEmail(@PathVariable String email) {
-        return ResponseEntity.ok(clientService.getClientByEmail(email));
-    }
-
-    @PostMapping
-    public ResponseEntity<ClientDTO> addClient(@Valid @RequestBody ClientDTO clientDTO) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(clientService.addClient(clientDTO));
-    }
-
-    @PutMapping("/{email}")
-    @PreAuthorize("hasRole('EMPLOYEE') or #email == authentication.principal.username")
-    public ResponseEntity<ClientDTO> updateClientByEmail(@PathVariable String email, @Valid @RequestBody ClientDTO clientDTO) {
-        return ResponseEntity.ok(clientService.updateClientByEmail(email, clientDTO));
-    }
-
-    @DeleteMapping("/{email}")
-    @PreAuthorize("#email == authentication.principal.username")
-    public ResponseEntity<Void> deleteClientByEmail(@PathVariable String email) {
-        clientService.deleteClientByEmail(email);
-        return ResponseEntity.noContent().build();
+    
+    @PostMapping("/profile/delete")
+    @PreAuthorize("hasRole('CLIENT')")
+    public String deleteClientProfile(Authentication authentication, 
+                                    RedirectAttributes redirectAttributes,
+                                    HttpServletRequest request) {
+        try {
+            String userEmail = authentication.getName();
+            
+            // Get current language parameter
+            String lang = request.getParameter("lang");
+            if (lang == null) {
+                lang = "en"; // default fallback
+            }
+            
+            clientService.deleteClientByEmail(userEmail);
+            redirectAttributes.addFlashAttribute("success", "Account deleted successfully!");
+            return "redirect:/logout?lang=" + lang;
+            
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Failed to delete account: " + e.getMessage());
+            return "redirect:/profile";
+        }
     }
 }
