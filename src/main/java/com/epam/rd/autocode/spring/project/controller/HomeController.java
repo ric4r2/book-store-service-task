@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 @Controller
@@ -72,23 +73,59 @@ public class HomeController {
     }
     
     @PostMapping("/profile/update")
-    public String updateProfile(@ModelAttribute("user") @Valid Object userDto, 
-                               BindingResult bindingResult,
+    public String updateProfile(HttpServletRequest request,
                                Authentication authentication,
                                RedirectAttributes redirectAttributes) {
-        if (bindingResult.hasErrors()) {
-            return "profile";
-        }
-        
         try {
             String userEmail = authentication.getName();
             boolean isEmployee = authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_EMPLOYEE"));
             
-            if (isEmployee && userDto instanceof EmployeeDTO) {
-                employeeService.updateEmployeeByEmail(userEmail, (EmployeeDTO) userDto);
+            if (isEmployee) {
+                // Create EmployeeDTO from form parameters
+                EmployeeDTO employeeDto = new EmployeeDTO();
+                employeeDto.setEmail(userEmail);
+                employeeDto.setName(request.getParameter("name"));
+                employeeDto.setPhone(request.getParameter("phone"));
+                
+                // Handle birth date
+                String birthDateStr = request.getParameter("birthDate");
+                if (birthDateStr != null && !birthDateStr.trim().isEmpty()) {
+                    employeeDto.setBirthDate(java.time.LocalDate.parse(birthDateStr));
+                }
+                
+                // Handle password
+                String password = request.getParameter("password");
+                if (password == null || password.trim().isEmpty()) {
+                    // Keep current password
+                    EmployeeDTO currentEmployee = employeeService.getEmployeeByEmail(userEmail);
+                    employeeDto.setPassword(currentEmployee.getPassword());
+                } else {
+                    employeeDto.setPassword(password);
+                }
+                
+                employeeService.updateEmployeeByEmail(userEmail, employeeDto);
                 redirectAttributes.addFlashAttribute("success", "Employee profile updated successfully!");
-            } else if (!isEmployee && userDto instanceof ClientDTO) {
-                clientService.updateClientByEmail(userEmail, (ClientDTO) userDto);
+                
+            } else {
+                // Create ClientDTO from form parameters
+                ClientDTO clientDto = new ClientDTO();
+                clientDto.setEmail(userEmail);
+                clientDto.setName(request.getParameter("name"));
+                
+                // Handle password
+                String password = request.getParameter("password");
+                if (password == null || password.trim().isEmpty()) {
+                    // Keep current password and balance
+                    ClientDTO currentClient = clientService.getClientByEmail(userEmail);
+                    clientDto.setPassword(currentClient.getPassword());
+                    clientDto.setBalance(currentClient.getBalance());
+                } else {
+                    ClientDTO currentClient = clientService.getClientByEmail(userEmail);
+                    clientDto.setPassword(password);
+                    clientDto.setBalance(currentClient.getBalance());
+                }
+                
+                clientService.updateClientByEmail(userEmail, clientDto);
                 redirectAttributes.addFlashAttribute("success", "Client profile updated successfully!");
             }
             
@@ -100,10 +137,18 @@ public class HomeController {
     }
     
     @PostMapping("/profile/delete")
-    public String deleteProfile(Authentication authentication, RedirectAttributes redirectAttributes) {
+    public String deleteProfile(Authentication authentication, 
+                              RedirectAttributes redirectAttributes,
+                              HttpServletRequest request) {
         try {
             String userEmail = authentication.getName();
             boolean isEmployee = authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_EMPLOYEE"));
+            
+            // Get current language parameter
+            String lang = request.getParameter("lang");
+            if (lang == null) {
+                lang = "en"; // default fallback
+            }
             
             if (isEmployee) {
                 employeeService.deleteEmployeeByEmail(userEmail);
@@ -112,7 +157,7 @@ public class HomeController {
             }
             
             redirectAttributes.addFlashAttribute("success", "Account deleted successfully!");
-            return "redirect:/logout";
+            return "redirect:/logout?lang=" + lang;
             
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Failed to delete account: " + e.getMessage());
