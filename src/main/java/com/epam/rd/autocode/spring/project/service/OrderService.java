@@ -11,4 +11,8 @@ public interface OrderService {
     List<OrderDTO> getOrdersByEmployee(String employeeEmail);
 
     OrderDTO addOrder(OrderDTO order);
+    
+    List<OrderDTO> getAllOrders();
+    
+    OrderDTO approveOrder(Long orderId, String employeeEmail);
 }

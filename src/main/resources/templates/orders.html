@@ -22,6 +22,22 @@
             background-color: #5a6fd8;
             color: white;
         }
+        .order-card {
+            transition: box-shadow 0.3s ease;
+        }
+        .order-card:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .status-pending {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        .status-approved {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
     </style>
 </head>
 
@@ -49,6 +65,12 @@
                     <li class="nav-item" sec:authorize="isAuthenticated()">
                         <a class="nav-link active" th:href="@{/orders(lang=${#locale.language})}" th:text="#{nav.orders}">Orders</a>
                     </li>
+                    <li class="nav-item" sec:authorize="hasRole('CLIENT')">
+                        <a class="nav-link" th:href="@{/cart(lang=${#locale.language})}">
+                            <i class="bi bi-cart"></i>
+                            <span th:text="#{nav.cart}">Cart</span>
+                        </a>
+                    </li>
                     <li class="nav-item" sec:authorize="hasRole('EMPLOYEE')">
                         <a class="nav-link" th:href="@{/clients(lang=${#locale.language})}" th:text="#{nav.clients}">Clients</a>
                     </li>
@@ -58,38 +80,27 @@
                 <ul class="navbar-nav">
                     <!-- Language Selector -->
                     <li class="nav-item dropdown me-3">
-                        <a class="nav-link dropdown-toggle" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown">
                             <i class="bi bi-globe"></i>
-                            <span th:text="#{lang.selector.title}">Language</span>
+                            <span th:text="#{nav.language}">Language</span>
                         </a>
-                        <ul class="dropdown-menu" aria-labelledby="languageDropdown">
-                            <li>
-                                <a class="dropdown-item" th:href="@{/orders(lang='en')}" th:classappend="${#locale.language == 'en'} ? 'active' : ''">
-                                    <i class="bi bi-flag me-2"></i>
-                                    <span th:text="#{lang.english}">English</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" th:href="@{/orders(lang='es')}" th:classappend="${#locale.language == 'es'} ? 'active' : ''">
-                                    <i class="bi bi-flag me-2"></i>
-                                    <span th:text="#{lang.spanish}">Spanish</span>
-                                </a>
-                            </li>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" th:classappend="${#locale.language == 'en' ? 'active' : ''}" 
+                                   th:href="@{/orders(lang=en)}" th:text="#{nav.language.english}">English</a></li>
+                            <li><a class="dropdown-item" th:classappend="${#locale.language == 'es' ? 'active' : ''}" 
+                                   th:href="@{/orders(lang=es)}" th:text="#{nav.language.spanish}">Español</a></li>
                         </ul>
                     </li>
                     
-                    <li class="nav-item" sec:authorize="!isAuthenticated()">
-                        <a class="nav-link" th:href="@{/login(lang=${#locale.language})}" th:text="#{nav.login}">Login</a>
-                    </li>
-                    <li class="nav-item" sec:authorize="!isAuthenticated()">
-                        <a class="nav-link" th:href="@{/register(lang=${#locale.language})}" th:text="#{nav.register}">Register</a>
-                    </li>
-                    <li class="nav-item dropdown" sec:authorize="isAuthenticated()">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                            <i class="bi bi-person"></i>
-                            <span sec:authentication="name">User</span>
+                    <!-- User Profile -->
+                    <li sec:authorize="isAuthenticated()" class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle"></i>
+                            <span sec:authentication="name">user@example.com</span>
                         </a>
                         <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" th:href="@{/profile(lang=${#locale.language})}" th:text="#{nav.profile}">Profile</a></li>
+                            <li><hr class="dropdown-divider"></li>
                             <li>
                                 <form th:action="@{/logout}" method="post" class="d-inline">
                                     <button type="submit" class="dropdown-item" th:text="#{nav.logout}">Logout</button>
@@ -106,12 +117,119 @@
     <div class="container mt-5">
         <div class="row">
             <div class="col-12">
-                <h1 th:text="#{page.orders.heading}">Your Orders</h1>
-                <p th:text="#{page.orders.description}">View and manage your book orders.</p>
+                <h1>
+                    <i class="bi bi-receipt"></i>
+                    <span th:if="${isEmployee}" th:text="#{page.orders.heading.employee}">All Orders</span>
+                    <span th:unless="${isEmployee}" th:text="#{page.orders.heading.client}">My Orders</span>
+                </h1>
+                <p th:if="${isEmployee}" th:text="#{page.orders.description.employee}">View and manage all customer orders.</p>
+                <p th:unless="${isEmployee}" th:text="#{page.orders.description.client}">Track your book orders and their status.</p>
                 
-                <div class="alert alert-info" role="alert">
-                    <i class="bi bi-info-circle"></i>
-                    <span th:text="#{page.orders.placeholder}">Orders page is under construction. Coming soon!</span>
+                <!-- Success/Error Messages -->
+                <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="bi bi-check-circle"></i>
+                    <span th:text="${success}">Success message</span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                
+                <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    <span th:text="${error}">Error message</span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                
+                <!-- Orders Display -->
+                <div th:if="${orders != null and not #lists.isEmpty(orders)}">
+                    <div th:each="order : ${orders}" class="card order-card mb-4">
+                        <div class="card-header">
+                            <div class="row align-items-center">
+                                <div class="col-md-6">
+                                    <h5 class="mb-0">
+                                        <span th:text="#{orders.order.number}">Order</span> #<span th:text="${order.id}">123</span>
+                                    </h5>
+                                    <small class="text-muted" th:text="${#temporals.format(order.orderDate, 'yyyy-MM-dd HH:mm')}">2023-01-01 12:00</small>
+                                </div>
+                                <div class="col-md-3 text-center">
+                                    <div th:if="${order.employeeEmail == null}" class="badge status-pending px-3 py-2">
+                                        <i class="bi bi-clock"></i>
+                                        <span th:text="#{orders.status.pending}">Pending Approval</span>
+                                    </div>
+                                    <div th:if="${order.employeeEmail != null}" class="badge status-approved px-3 py-2">
+                                        <i class="bi bi-check-circle"></i>
+                                        <span th:text="#{orders.status.approved}">Approved</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 text-end">
+                                    <h5 class="text-success mb-0" th:text="'$' + ${order.price}">$0.00</h5>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <!-- Client Information (Employee View) -->
+                                    <div th:if="${isEmployee}" class="mb-3">
+                                        <strong th:text="#{orders.client}">Client:</strong>
+                                        <span th:text="${order.clientEmail}">client@example.com</span>
+                                    </div>
+                                    
+                                    <!-- Employee Information (Client View) -->
+                                    <div th:if="${!isEmployee and order.employeeEmail != null}" class="mb-3">
+                                        <strong th:text="#{orders.approved.by}">Approved by:</strong>
+                                        <span th:text="${order.employeeEmail}">employee@example.com</span>
+                                    </div>
+                                    
+                                    <!-- Book Items -->
+                                    <div class="mb-3">
+                                        <strong th:text="#{orders.items}">Items:</strong>
+                                        <div th:each="item : ${order.bookItems}" class="mt-2">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <span th:text="${item.book.name}">Book Name</span>
+                                                    <small class="text-muted">by <span th:text="${item.book.author}">Author</span></small>
+                                                </div>
+                                                <div class="text-end">
+                                                    <span class="badge bg-secondary me-2" th:text="'Qty: ' + ${item.quantity}">Qty: 1</span>
+                                                    <span th:text="'$' + ${item.book.price}">$0.00</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Actions (Employee View) -->
+                                <div th:if="${isEmployee}" class="col-md-4 text-end">
+                                    <div th:if="${order.employeeEmail == null}">
+                                        <form th:action="@{/orders/approve}" method="post" class="d-inline">
+                                            <input type="hidden" name="orderId" th:value="${order.id}">
+                                            <button type="submit" class="btn btn-success">
+                                                <i class="bi bi-check-circle"></i>
+                                                <span th:text="#{orders.approve.button}">Approve Order</span>
+                                            </button>
+                                        </form>
+                                    </div>
+                                    <div th:if="${order.employeeEmail != null}" class="text-muted">
+                                        <i class="bi bi-person-check"></i>
+                                        <span th:text="#{orders.approved.by}">Approved by</span>
+                                        <br>
+                                        <small th:text="${order.employeeEmail}">employee@example.com</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- No Orders Message -->
+                <div th:if="${orders == null or #lists.isEmpty(orders)}" class="text-center py-5">
+                    <i class="bi bi-receipt display-1 text-muted"></i>
+                    <h3 th:if="${isEmployee}" th:text="#{orders.empty.employee}">No orders found</h3>
+                    <h3 th:unless="${isEmployee}" th:text="#{orders.empty.client}">You haven't placed any orders yet</h3>
+                    <p th:unless="${isEmployee}" th:text="#{orders.empty.description}">Browse our books and add them to your cart to place your first order.</p>
+                    <a th:unless="${isEmployee}" th:href="@{/books(lang=${#locale.language})}" class="btn btn-primary">
+                        <i class="bi bi-book"></i>
+                        <span th:text="#{orders.browse.books}">Browse Books</span>
+                    </a>
                 </div>
             </div>
         </div>

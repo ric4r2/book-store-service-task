@@ -14,8 +14,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -76,6 +76,7 @@ public class OrderServiceImpl implements OrderService {
         order.setEmployee(employee);
         order.setOrderDate(orderDTO.getOrderDate());
         order.setPrice(orderDTO.getPrice());
+        order.setBookItems(new ArrayList<>());  // Initialize the bookItems list
 
         for (BookItemDTO itemDTO : orderDTO.getBookItems()) {
             Book book = itemDTO.getBook();
@@ -113,5 +114,32 @@ public class OrderServiceImpl implements OrderService {
         dto.setBookItems(items);
 
         return dto;
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public List<OrderDTO> getAllOrders() {
+        log.debug("Fetching all orders");
+        return orderRepository.findAll()
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+    
+    @Override
+    public OrderDTO approveOrder(Long orderId, String employeeEmail) {
+        log.debug("Approving order {} by employee {}", orderId, employeeEmail);
+        
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new NotFoundException("Order not found with id: " + orderId));
+        
+        Employee employee = employeeRepository.findByEmail(employeeEmail)
+                .orElseThrow(() -> new NotFoundException("Employee not found with email: " + employeeEmail));
+        
+        order.setEmployee(employee);
+        order = orderRepository.save(order);
+        
+        log.info("Order {} approved by employee {}", orderId, employeeEmail);
+        return convertToDTO(order);
     }
 }

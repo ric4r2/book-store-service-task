@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -15,6 +16,13 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Order {
+    
+    public Order(Client client, LocalDateTime orderDate, BigDecimal price) {
+        this.client = client;
+        this.orderDate = orderDate;
+        this.price = price;
+        this.bookItems = new ArrayList<>();
+    }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

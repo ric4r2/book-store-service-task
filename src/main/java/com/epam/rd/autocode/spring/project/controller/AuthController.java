@@ -15,9 +15,4 @@ public class AuthController {
     public String register() {
         return "register";
     }
-    
-    @GetMapping("/orders")
-    public String orders() {
-        return "orders";
-    }
 }
