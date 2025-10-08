@@ -52,7 +52,7 @@
                         <a class="nav-link" th:href="@{/orders(lang=${#locale.language})}" th:text="#{nav.orders}">Orders</a>
                     </li>
                     <li class="nav-item" sec:authorize="hasRole('CLIENT')">
-                        <a class="nav-link active" th:href="@{/cart(lang=${#locale.language})}">
+                        <a class="nav-link active" th:href="@{/books/cart(lang=${#locale.language})}">
                             <i class="bi bi-cart"></i>
                             <span th:text="#{nav.cart}">Cart</span>
                         </a>
@@ -72,9 +72,9 @@
                         </a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" th:classappend="${#locale.language == 'en' ? 'active' : ''}" 
-                                   th:href="@{/cart(lang=en)}" th:text="#{nav.language.english}">English</a></li>
+                                   th:href="@{/books/cart(lang=en)}" th:text="#{nav.language.english}">English</a></li>
                             <li><a class="dropdown-item" th:classappend="${#locale.language == 'es' ? 'active' : ''}" 
-                                   th:href="@{/cart(lang=es)}" th:text="#{nav.language.spanish}">Español</a></li>
+                                   th:href="@{/books/cart(lang=es)}" th:text="#{nav.language.spanish}">Español</a></li>
                         </ul>
                     </li>
                     
@@ -142,7 +142,7 @@
                                         <strong th:text="'$' + ${item.book.price}">$0.00</strong>
                                     </div>
                                     <div class="col-md-2">
-                                        <form th:action="@{/cart/update}" method="post" class="d-flex align-items-center">
+                                        <form th:action="@{/books/cart/update}" method="post" class="d-flex align-items-center">
                                             <input type="hidden" name="bookName" th:value="${item.book.name}">
                                             <input type="hidden" name="lang" th:value="${#locale.language}">
                                             <input type="number" class="form-control quantity-input" 
@@ -154,7 +154,7 @@
                                         <strong th:text="'$' + ${item.subtotal}">$0.00</strong>
                                     </div>
                                     <div class="col-md-1 text-center">
-                                        <form th:action="@{/cart/remove}" method="post" class="d-inline">
+                                        <form th:action="@{/books/cart/remove}" method="post" class="d-inline">
                                             <input type="hidden" name="bookName" th:value="${item.book.name}">
                                             <input type="hidden" name="lang" th:value="${#locale.language}">
                                             <button type="submit" class="btn btn-outline-danger btn-sm">
@@ -178,7 +178,7 @@
                                         <span th:text="#{cart.total}">Total:</span> 
                                         <span class="text-success" th:text="'$' + ${cartTotal}">$0.00</span>
                                     </h5>
-                                    <form th:action="@{/cart/order}" method="post" class="d-inline">
+                                    <form th:action="@{/books/cart/order}" method="post" class="d-inline">
                                         <input type="hidden" name="lang" th:value="${#locale.language}">
                                         <button type="submit" class="btn btn-success btn-lg">
                                             <i class="bi bi-check-circle"></i>

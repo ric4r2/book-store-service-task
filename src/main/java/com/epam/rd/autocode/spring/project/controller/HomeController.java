@@ -5,16 +5,13 @@ import com.epam.rd.autocode.spring.project.dto.EmployeeDTO;
 import com.epam.rd.autocode.spring.project.service.BookService;
 import com.epam.rd.autocode.spring.project.service.ClientService;
 import com.epam.rd.autocode.spring.project.service.EmployeeService;
-import com.epam.rd.autocode.spring.project.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequiredArgsConstructor
@@ -23,7 +20,6 @@ public class HomeController {
     private final BookService bookService;
     private final ClientService clientService;
     private final EmployeeService employeeService;
-    private final OrderService orderService;
     
     @GetMapping("/")
     public String home(Model model) {
@@ -32,6 +28,16 @@ public class HomeController {
         model.addAttribute("totalOrders", "35,000+");
         
         return "index";
+    }
+    
+    @GetMapping("/login")
+    public String login() {
+        return "login";
+    }
+    
+    @GetMapping("/register")
+    public String register() {
+        return "register";
     }
     
     @GetMapping(value = "/books", produces = "text/html")
@@ -89,43 +95,5 @@ public class HomeController {
             model.addAttribute("error", "Unable to load profile data.");
         }
         return "profile";
-    }
-    
-    @GetMapping("/orders")
-    public String orders(Model model, Authentication authentication) {
-        try {
-            String userEmail = authentication.getName();
-            boolean isEmployee = authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_EMPLOYEE"));
-            
-            if (isEmployee) {
-                model.addAttribute("orders", orderService.getAllOrders());
-                model.addAttribute("isEmployee", true);
-            } else {
-                model.addAttribute("orders", orderService.getOrdersByClient(userEmail));
-                model.addAttribute("isEmployee", false);
-            }
-            
-        } catch (Exception e) {
-            model.addAttribute("orders", java.util.Collections.emptyList());
-            model.addAttribute("error", "Unable to load orders at this time.");
-            model.addAttribute("isEmployee", authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_EMPLOYEE")));
-        }
-        return "orders";
-    }
-    
-    @PostMapping("/orders/approve")
-    public String approveOrder(@RequestParam Long orderId,
-                              Authentication authentication,
-                              RedirectAttributes redirectAttributes) {
-        try {
-            String employeeEmail = authentication.getName();
-            orderService.approveOrder(orderId, employeeEmail);
-            redirectAttributes.addFlashAttribute("success", "Order approved successfully!");
-            
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Failed to approve order: " + e.getMessage());
-        }
-        
-        return "redirect:/orders";
     }
 }

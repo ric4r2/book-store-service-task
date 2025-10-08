@@ -66,7 +66,7 @@
                         <a class="nav-link active" th:href="@{/orders(lang=${#locale.language})}" th:text="#{nav.orders}">Orders</a>
                     </li>
                     <li class="nav-item" sec:authorize="hasRole('CLIENT')">
-                        <a class="nav-link" th:href="@{/cart(lang=${#locale.language})}">
+                        <a class="nav-link" th:href="@{/books/cart(lang=${#locale.language})}">
                             <i class="bi bi-cart"></i>
                             <span th:text="#{nav.cart}">Cart</span>
                         </a>

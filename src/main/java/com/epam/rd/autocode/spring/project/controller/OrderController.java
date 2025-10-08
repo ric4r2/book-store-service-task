@@ -1,38 +1,56 @@
 package com.epam.rd.autocode.spring.project.controller;
 
-import com.epam.rd.autocode.spring.project.dto.OrderDTO;
 import com.epam.rd.autocode.spring.project.service.OrderService;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.List;
-
-@RestController
+@Controller
 @RequestMapping("/orders")
 public class OrderController {
 
     @Autowired
     private OrderService orderService;
 
-    @GetMapping("/client/{email}")
-    @PreAuthorize("hasRole('EMPLOYEE') or #email == authentication.principal.username")
-    public ResponseEntity<List<OrderDTO>> getAllOrdersByClient(@PathVariable String email) {
-        return ResponseEntity.ok(orderService.getOrdersByClient(email));
+    @GetMapping
+    public String orders(Model model, Authentication authentication) {
+        try {
+            String userEmail = authentication.getName();
+            boolean isEmployee = authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_EMPLOYEE"));
+            
+            if (isEmployee) {
+                model.addAttribute("orders", orderService.getAllOrders());
+                model.addAttribute("isEmployee", true);
+            } else {
+                model.addAttribute("orders", orderService.getOrdersByClient(userEmail));
+                model.addAttribute("isEmployee", false);
+            }
+            
+        } catch (Exception e) {
+            model.addAttribute("orders", java.util.Collections.emptyList());
+            model.addAttribute("error", "Unable to load orders at this time.");
+            model.addAttribute("isEmployee", authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_EMPLOYEE")));
+        }
+        return "orders";
     }
-
-    @GetMapping("/employee/{email}")
-    @PreAuthorize("hasRole('EMPLOYEE')")
-    public ResponseEntity<List<OrderDTO>> getAllOrdersByEmployee(@PathVariable String email) {
-        return ResponseEntity.ok(orderService.getOrdersByEmployee(email));
-    }
-
-    @PostMapping
-    @PreAuthorize("hasRole('CLIENT')")
-    public ResponseEntity<OrderDTO> addOrder(@Valid @RequestBody OrderDTO orderDTO) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(orderService.addOrder(orderDTO));
+    
+    @PostMapping("/approve")
+    public String approveOrder(@RequestParam Long orderId,
+                              Authentication authentication,
+                              RedirectAttributes redirectAttributes) {
+        try {
+            String employeeEmail = authentication.getName();
+            orderService.approveOrder(orderId, employeeEmail);
+            redirectAttributes.addFlashAttribute("success", "Order approved successfully!");
+            
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Failed to approve order: " + e.getMessage());
+        }
+        
+        return "redirect:/orders";
     }
 }
